@@ -1,0 +1,8 @@
+[package]
+name = "rust-doom-bsp-engine"
+version = "0.1.0"
+authors = ["Pavel Vavruska <vavruska.pavel@gmail.com>"]
+
+[dependencies]
+piston_window = "0.123.0"
+rand = "0.8.5"
