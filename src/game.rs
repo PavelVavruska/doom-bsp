@@ -11,6 +11,7 @@ use crate::player::Player;
 use crate::space::map::get_tree;
 
 const WORLD_COLOR: Color = [0.1, 0.9, 0.1, 0.3];
+const PORTAL_COLOR: Color = [0.9, 0.0, 0.0, 0.5];
 
 pub struct Game {
     // World buffers
@@ -68,7 +69,15 @@ impl Game {
                 }
             }
         }
-        let test = 1;
+        draw_line(
+            PORTAL_COLOR,
+            z.first.x as i32,
+            z.first.y as i32,
+            z.second.x as i32,
+            z.second.y as i32,
+            con,
+            g,
+        );
     }
 
     fn restart_game(self) -> Game {
