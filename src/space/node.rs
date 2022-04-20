@@ -55,17 +55,6 @@ impl Node {
             None => (future_node, future_subsector, &self.line),
         };
         (future_node, future_subsector, &self.line)
-        /*match future_node {
-            TreeItem::Node => self.travers(player),
-            TreeItem::Subsector => (future_node, self.line),
-            TreeItem::Line => (future_node, self.line),
-        }*/
-
-        /*if future_node , Subsector) {
-            (future_node, self.line)
-        } else if isinstance(future_node, Node) {
-            future_node.travers(player)
-        }*/
     }
 
     pub fn get_neighbours(&self, player: Player) {

@@ -1,7 +1,5 @@
 use crate::space::line::get_new_line_segment;
-use crate::space::line::Line;
 use crate::space::node::Node;
-use crate::space::node::TreeItem;
 use crate::space::subsector::Subsector;
 use crate::space::vec2d::Vec2d;
 
@@ -34,7 +32,7 @@ pub fn get_tree() -> Node {
         &point_1_e_portal,
         &normal_vector_simple_north,
     ); // 4th  0-11 PORTAL
-    let line_1_e = get_new_line_segment(&point_1_e_portal, &point_1_f, &normal_vector_simple_east); // 4th  0-11
+    let line_1_e = get_new_line_segment(&point_1_e_portal, &point_1_f, &normal_vector_simple_north); // 4th  0-11
     let line_1_f = get_new_line_segment(&point_1_f, &point_1_a, &normal_vector_simple_east); // 4th  0-11
 
     // south polygon
@@ -43,9 +41,9 @@ pub fn get_tree() -> Node {
                                                                                                     // line_1_d !!!!
     let line_2_c = get_new_line_segment(&point_1_e_portal, &point_2_b, &normal_vector_simple_east); // 4th  0-11
     let line_2_d = get_new_line_segment(&point_2_b, &point_2_c, &normal_vector_simple_east); // 4th  0-11
-    let line_2_e = get_new_line_segment(&point_2_c, &point_2_d, &normal_vector_simple_east); // 4th  0-11
-    let line_2_f = get_new_line_segment(&point_2_d, &point_2_e, &normal_vector_simple_east); // 4th  0-11
-    let line_2_g = get_new_line_segment(&point_2_e, &point_2_a, &normal_vector_simple_east); // 4th  0-11
+    let line_2_e = get_new_line_segment(&point_2_c, &point_2_d, &normal_vector_simple_north); // 4th  0-11
+    let line_2_f = get_new_line_segment(&point_2_d, &point_2_e, &normal_vector_simple_west); // 4th  0-11
+    let line_2_g = get_new_line_segment(&point_2_e, &point_2_a, &normal_vector_simple_west); // 4th  0-11
 
     let subsector_1 = Subsector::new(&vec![
         line_1_a.clone(),

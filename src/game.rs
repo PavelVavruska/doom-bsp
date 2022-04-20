@@ -1,7 +1,9 @@
 use std::f64::consts::PI;
 
+use crate::player;
 use crate::space::map;
 use crate::space::node::Node;
+use crate::space::vec2d::Vec2d;
 use piston_window::types::Color;
 use piston_window::*;
 
@@ -14,6 +16,8 @@ use crate::space::map::get_tree;
 
 const WORLD_COLOR: Color = [0.1, 0.9, 0.1, 0.3];
 const PORTAL_COLOR: Color = [0.9, 0.0, 0.0, 0.5];
+const WORLD_COLOR_DARK: Color = [0.1, 0.3, 0.1, 0.3];
+const PORTAL_COLOR_DARK: Color = [0.3, 0.0, 0.0, 0.5];
 const PLAYER_COLOR: Color = [0.9, 0.9, 0.9, 0.5];
 
 pub struct Game {
@@ -61,10 +65,22 @@ impl Game {
             None => {}
             Some(line_segments) => {
                 for line_segment in line_segments.get_lines() {
+                    let is_player_watching = line_segment.normal.dot_product_with(
+                        Vec2d::new(self.player.view_angle.sin(), self.player.view_angle.cos())
+                            .normalize(),
+                    );
                     let wall_color = if z == line_segment {
-                        PORTAL_COLOR
+                        if is_player_watching < 0.0 {
+                            PORTAL_COLOR
+                        } else {
+                            PORTAL_COLOR_DARK
+                        }
                     } else {
-                        WORLD_COLOR
+                        if is_player_watching < 0.0 {
+                            WORLD_COLOR
+                        } else {
+                            WORLD_COLOR_DARK
+                        }
                     };
                     draw_line(
                         wall_color,
