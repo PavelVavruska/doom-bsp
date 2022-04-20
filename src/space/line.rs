@@ -1,6 +1,6 @@
 use super::vec2d::Vec2d;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Line {
     pub first: Vec2d,
     pub second: Vec2d,

@@ -4,7 +4,7 @@ use piston_window::types::Color;
 use piston_window::Context;
 use piston_window::G2d;
 
-const BLOCK_SIZE: f64 = 2.0;
+const BLOCK_SIZE: f64 = 1.0;
 
 pub fn to_gui_coord(game_coord: i32) -> f64 {
     (game_coord as f64) * BLOCK_SIZE

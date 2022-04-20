@@ -14,8 +14,8 @@ use game::Game;
 
 const BACK_COLOR: Color = [0.204, 0.286, 0.369, 1.0];
 
-const WINDOW_WIDTH: usize = 400;
-const WINDOW_HEIGHT: usize = 300;
+const WINDOW_WIDTH: usize = 800;
+const WINDOW_HEIGHT: usize = 600;
 
 fn main() {
     // Prepare window settings
@@ -48,10 +48,6 @@ fn main() {
         window.draw_2d(&event, |c, g, _| {
             clear(BACK_COLOR, g);
             game.draw(&c, g);
-            game.frame_buffer = [[false; WINDOW_HEIGHT]; WINDOW_WIDTH];
-            game.frame_buffer
-                .copy_from_slice(&game.frame_buffer_next_tick);
-            game.frame_buffer_next_tick = [[false; WINDOW_HEIGHT]; WINDOW_WIDTH];
         });
     }
 }
