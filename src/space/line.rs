@@ -7,6 +7,7 @@ pub struct Line {
     pub normal: Vec2d,
     pub formula_m: f64,
     pub formula_b: f64,
+    pub is_portal: bool,
 }
 
 /// returns m and b from line formula y=mx+b
@@ -27,14 +28,19 @@ pub fn get_line_formula(point1: &Vec2d, point2: &Vec2d) -> (f64, f64) {
     (m, b)
 }
 
-pub fn get_new_line_segment(first: &Vec2d, second: &Vec2d, normal: &Vec2d) -> Line {
+pub fn get_new_line_segment(
+    first: &Vec2d,
+    second: &Vec2d,
+    normal: &Vec2d,
+    is_portal: bool,
+) -> Line {
     let first = Vec2d::new(first.x, first.y);
     let second = Vec2d::new(second.x, second.y);
     let normal = Vec2d::new(normal.x, normal.y);
     let (a, b) = get_line_formula(&first, &second);
     let formula_m = a;
     let formula_b = b;
-    Line::new(first, second, normal, formula_m, formula_b)
+    Line::new(first, second, normal, formula_m, formula_b, is_portal)
 }
 
 /// normal vector (visible side)
@@ -44,14 +50,37 @@ pub fn get_new_line_segment(first: &Vec2d, second: &Vec2d, normal: &Vec2d) -> Li
 /// First--------Second
 ///
 impl Line {
-    pub fn new(first: Vec2d, second: Vec2d, normal: Vec2d, formula_m: f64, formula_b: f64) -> Self {
+    pub fn new(
+        first: Vec2d,
+        second: Vec2d,
+        normal: Vec2d,
+        formula_m: f64,
+        formula_b: f64,
+        is_portal: bool,
+    ) -> Self {
         Line {
             first,
             second,
             normal,
             formula_m,
             formula_b,
+            is_portal,
         }
+    }
+
+    pub fn compare_with(&self, second_line: &Line) -> bool {
+        if self.first == second_line.first {
+            if self.second == second_line.second {
+                return true;
+            }
+            return false;
+        } else if self.second == second_line.first {
+            if self.first == second_line.second {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     pub fn compute_length(&self) -> f64 {

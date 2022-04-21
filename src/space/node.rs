@@ -1,15 +1,7 @@
-use std::ptr::NonNull;
-
 use crate::player::Player;
 use crate::space::line::Line;
 use crate::space::subsector::Subsector;
 use crate::space::vec2d::Vec2d;
-
-pub enum TreeItem {
-    Node,
-    Subsector,
-    Line,
-}
 
 pub struct Node {
     pub line: Line,

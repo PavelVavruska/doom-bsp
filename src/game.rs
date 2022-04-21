@@ -1,6 +1,5 @@
 use std::f64::consts::PI;
 
-use crate::player;
 use crate::space::map;
 use crate::space::node::Node;
 use crate::space::vec2d::Vec2d;
@@ -25,7 +24,6 @@ pub struct Game {
     pub frame_buffer: [[bool; WINDOW_HEIGHT]; WINDOW_WIDTH],
     pub frame_buffer_next_tick: [[bool; WINDOW_HEIGHT]; WINDOW_WIDTH],
     player: Player,
-    map: Node,
 }
 
 impl Game {
@@ -37,7 +35,6 @@ impl Game {
             frame_buffer: temp_world,
             frame_buffer_next_tick: [[false; WINDOW_HEIGHT]; WINDOW_WIDTH],
             player: Player::new(100.0, 100.0, 0.0, 100.0, 0.0, 50.0),
-            map: get_tree(),
         }
     }
     pub fn key_pressed(&mut self, key: Key) {
@@ -65,11 +62,12 @@ impl Game {
             None => {}
             Some(line_segments) => {
                 for line_segment in line_segments.get_lines() {
-                    let is_player_watching = line_segment.normal.dot_product_with(
-                        Vec2d::new(self.player.view_angle.sin(), self.player.view_angle.cos())
-                            .normalize(),
-                    );
-                    let wall_color = if z == line_segment {
+                    let is_player_watching =
+                        line_segment.normal.dot_product_with(Vec2d::new(
+                            self.player.view_angle.sin(),
+                            self.player.view_angle.cos(),
+                        ) /* .normalize()*/);
+                    let wall_color = if line_segment.is_portal {
                         if is_player_watching < 0.0 {
                             PORTAL_COLOR
                         } else {

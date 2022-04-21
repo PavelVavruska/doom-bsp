@@ -38,7 +38,6 @@ pub fn get_tree() -> Node {
     // top
     let point_2_a = Vec2d::new(300.0, 100.0);
     let point_2_b = Vec2d::new(400.0, 100.0);
-    // no lines east
     // bottom
     let point_2_c = Vec2d::new(300.0, 200.0);
     let point_2_d = Vec2d::new(400.0, 200.0);
@@ -75,54 +74,90 @@ pub fn get_tree() -> Node {
     // lines clockwise
 
     // segment 1 - big left
-    let line_1_a = get_new_line_segment(&point_1_a, &point_1_b, &normal_vector_simple_south);
-    let line_1_b = get_new_line_segment(&point_1_b, &point_1_c_portal, &normal_vector_simple_west);
+    let line_1_a = get_new_line_segment(&point_1_a, &point_1_b, &normal_vector_simple_south, false);
+    let line_1_b = get_new_line_segment(
+        &point_1_b,
+        &point_1_c_portal,
+        &normal_vector_simple_west,
+        false,
+    );
     let line_1_c_portal = get_new_line_segment(
         &point_1_c_portal,
         &point_1_d_portal,
         &normal_vector_simple_west,
+        true,
     );
-    let line_1_d = get_new_line_segment(&point_1_d_portal, &point_1_e, &normal_vector_simple_west);
-    let line_1_e = get_new_line_segment(&point_1_e, &point_1_f, &normal_vector_simple_north);
-    let line_1_f = get_new_line_segment(&point_1_f, &point_1_a, &normal_vector_simple_east);
+    let line_1_d = get_new_line_segment(
+        &point_1_d_portal,
+        &point_1_e,
+        &normal_vector_simple_west,
+        false,
+    );
+    let line_1_e = get_new_line_segment(&point_1_e, &point_1_f, &normal_vector_simple_north, false);
+    let line_1_f = get_new_line_segment(&point_1_f, &point_1_a, &normal_vector_simple_east, false);
 
     // segment 2 small left
-    let line_2_a = get_new_line_segment(&point_2_a, &point_2_b, &normal_vector_simple_south);
-    let line_2_b = get_new_line_segment(&point_2_c, &point_2_d, &normal_vector_simple_north);
+    let line_2_a = get_new_line_segment(&point_2_a, &point_2_b, &normal_vector_simple_south, false);
+    let line_2_b = get_new_line_segment(&point_2_c, &point_2_d, &normal_vector_simple_north, false);
     let line_2_c_portal = get_new_line_segment(
         &point_2_e_portal,
         &point_2_f_portal,
         &normal_vector_simple_east,
+        true,
     );
-    let line_2_d =
-        get_new_line_segment(&point_main_p_1, &point_main_p_2, &normal_vector_simple_west);
+    let line_2_d = get_new_line_segment(
+        &point_main_p_1,
+        &point_main_p_2,
+        &normal_vector_simple_west,
+        true,
+    );
 
     // segment 3 - big right
-    let line_3_a = get_new_line_segment(&point_3_a, &point_3_b, &normal_vector_simple_south);
-    let line_3_b = get_new_line_segment(&point_3_b, &point_3_c, &normal_vector_simple_west);
-    let line_3_c = get_new_line_segment(&point_3_c, &point_3_d, &normal_vector_simple_north);
-    let line_3_d = get_new_line_segment(&point_3_d, &point_3_f_portal, &normal_vector_simple_east);
+    let line_3_a = get_new_line_segment(&point_3_a, &point_3_b, &normal_vector_simple_south, false);
+    let line_3_b = get_new_line_segment(&point_3_b, &point_3_c, &normal_vector_simple_west, false);
+    let line_3_c = get_new_line_segment(&point_3_c, &point_3_d, &normal_vector_simple_north, false);
+    let line_3_d = get_new_line_segment(
+        &point_3_d,
+        &point_3_f_portal,
+        &normal_vector_simple_east,
+        false,
+    );
     let line_3_e_portal = get_new_line_segment(
         &point_3_f_portal,
         &point_3_e_portal,
         &normal_vector_simple_east,
+        true,
     );
-    let line_3_f = get_new_line_segment(&point_3_e_portal, &point_3_a, &normal_vector_simple_east);
+    let line_3_f = get_new_line_segment(
+        &point_3_e_portal,
+        &point_3_a,
+        &normal_vector_simple_east,
+        false,
+    );
 
     // segment 4 - small right
-    let line_4_a = get_new_line_segment(&point_4_a, &point_4_b, &normal_vector_simple_south);
+    let line_4_a = get_new_line_segment(&point_4_a, &point_4_b, &normal_vector_simple_south, false);
     let line_4_b_portal = get_new_line_segment(
         &point_4_c_portal,
         &point_4_d_portal,
         &normal_vector_simple_west,
+        true,
     );
-    let line_4_c = get_new_line_segment(&point_4_f, &point_4_e, &normal_vector_simple_north);
+    let line_4_c = get_new_line_segment(&point_4_f, &point_4_e, &normal_vector_simple_north, false);
 
-    let line_main_portal_to_seg_1 =
-        get_new_line_segment(&point_main_p_2, &point_main_p_1, &normal_vector_simple_west);
+    let line_main_portal_to_seg_1 = get_new_line_segment(
+        &point_main_p_2,
+        &point_main_p_1,
+        &normal_vector_simple_west,
+        true,
+    );
 
-    let line_main_portal_to_seg_3 =
-        get_new_line_segment(&point_main_p_2, &point_main_p_1, &normal_vector_simple_east);
+    let line_main_portal_to_seg_3 = get_new_line_segment(
+        &point_main_p_2,
+        &point_main_p_1,
+        &normal_vector_simple_east,
+        true,
+    );
 
     // subsectors
 
