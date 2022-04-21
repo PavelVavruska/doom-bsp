@@ -14,7 +14,7 @@ use game::Game;
 
 const BACK_COLOR: Color = [0.204, 0.286, 0.369, 1.0];
 
-const WINDOW_WIDTH: usize = 800;
+const WINDOW_WIDTH: usize = 1000;
 const WINDOW_HEIGHT: usize = 600;
 
 fn main() {

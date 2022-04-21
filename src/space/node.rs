@@ -49,12 +49,11 @@ impl Node {
         } else {
             &self.right_subsector
         };
-
-        match future_node {
+        let future = match future_node {
             Some(node) => node.travers(player),
             None => (future_node, future_subsector, &self.line),
         };
-        (future_node, future_subsector, &self.line)
+        future
     }
 
     pub fn get_neighbours(&self, player: Player) {

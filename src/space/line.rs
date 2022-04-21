@@ -62,13 +62,23 @@ impl Line {
     }
 
     pub fn is_point_under(&self, point: Vec2d) -> bool {
+        /*
         let point_x = point.x;
-        let point_y = point.y;
-        let line_y = self.formula_m * point_x + self.formula_b;
-        if line_y < point_y {
-            return false;
+            let point_y = point.y;
+            let line_y = self.formula_m * point_x + self.formula_b;
+            if line_y < point_y {
+                return false;
+            }
+            true
+        */
+        if self.normal.x != 0.0 {
+            if self.first.x < point.x {
+                // simplified for only vertical portals
+                return false;
+            }
+            return true;
         }
-        true
+        return false;
     }
 
     /// scale ends
