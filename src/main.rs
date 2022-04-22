@@ -6,24 +6,22 @@ mod game;
 mod player;
 mod space;
 
+use drawing::to_gui_coord_u32;
+use game::Game;
 use piston_window::types::Color;
 use piston_window::*;
 
-use drawing::to_gui_coord_u32;
-use game::Game;
-
 const BACK_COLOR: Color = [0.204, 0.286, 0.369, 1.0];
-
-const WINDOW_WIDTH: usize = 1000;
-const WINDOW_HEIGHT: usize = 600;
+const WINDOW_WIDTH: usize = 1600;
+const WINDOW_HEIGHT: usize = 800;
 
 fn main() {
     // Prepare window settings
     let mut window_settings = WindowSettings::new(
         "Doom BSP engine",
         [
-            to_gui_coord_u32(WINDOW_WIDTH as i32),
-            to_gui_coord_u32(WINDOW_HEIGHT as i32),
+            to_gui_coord_u32(WINDOW_WIDTH),
+            to_gui_coord_u32(WINDOW_HEIGHT),
         ],
     )
     .exit_on_esc(true);

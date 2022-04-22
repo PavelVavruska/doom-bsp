@@ -28,6 +28,21 @@ pub fn get_line_formula(point1: &Vec2d, point2: &Vec2d) -> (f64, f64) {
     (m, b)
 }
 
+pub fn calculate_x_y_line_for_x(
+    diff_rot_2_y: f64,
+    diff_rot_1_y: f64,
+    diff_rot_2_x: f64,
+    diff_rot_1_x: f64,
+    x: f64,
+) -> (f64, f64) {
+    let mut m = 0.0;
+    if diff_rot_2_x - diff_rot_1_x != 0.0 {
+        m = (diff_rot_2_y - diff_rot_1_y) / (diff_rot_2_x - diff_rot_1_x); // slope equation
+    }
+    let b = diff_rot_2_y - m * diff_rot_2_x; // compute B: y = m*x+b
+    return (x, m * x + b); // x, y for x
+}
+
 pub fn get_new_line_segment(
     first: &Vec2d,
     second: &Vec2d,
@@ -132,5 +147,38 @@ impl Line {
         let delta_y = y1 - y2;
         self.second.x = x2 + delta_x * scale;
         self.second.y = y2 + delta_y * scale;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::get_new_line_segment;
+    use super::Vec2d;
+
+    #[test]
+    fn test_line_comparation() {
+        let line_1_point_1 = Vec2d::new(5.0, 5.0);
+        let line_1_point_2 = Vec2d::new(10.0, 5.0);
+        let line_1_normal = Vec2d::new(0.0, 1.0); // south
+
+        let line_2_point_1 = Vec2d::new(5.0, 5.0);
+        let line_2_point_2 = Vec2d::new(10.0, 5.0);
+        let line_2_normal = Vec2d::new(0.0, 1.0); // south
+
+        let line_2_point_2_alternative = Vec2d::new(15.0, 5.0);
+
+        let line_1 = get_new_line_segment(&line_1_point_1, &line_1_point_2, &line_1_normal, false);
+        let line_2 = get_new_line_segment(&line_2_point_1, &line_2_point_2, &line_2_normal, false);
+
+        assert!(line_1 == line_2, "Lines are not equal.");
+
+        let line_2 = get_new_line_segment(
+            &line_2_point_1,
+            &line_2_point_2_alternative,
+            &line_2_normal,
+            false,
+        );
+
+        assert!(line_1 != line_2, "Lines are equal.");
     }
 }

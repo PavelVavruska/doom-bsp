@@ -1,23 +1,22 @@
-use std::f64::consts::PI;
-
-use crate::space::map;
-use crate::space::node::Node;
-use crate::space::vec2d::Vec2d;
-use piston_window::types::Color;
-use piston_window::*;
-
 use super::WINDOW_HEIGHT;
 use super::WINDOW_WIDTH;
-use drawing::{draw_line, draw_rectange};
-
 use crate::player::Player;
-use crate::space::map::get_tree;
+use crate::space::line::calculate_x_y_line_for_x;
+use crate::space::map;
+use crate::space::vec2d::Vec2d;
+use drawing::{draw_line_minimap, draw_rectange, draw_wall_line_first_person};
+use piston_window::color::BLACK;
+use piston_window::types::Color;
+use piston_window::*;
+use std::f64::consts::PI;
 
-const WORLD_COLOR: Color = [0.1, 0.9, 0.1, 0.3];
-const PORTAL_COLOR: Color = [0.9, 0.0, 0.0, 0.5];
-const WORLD_COLOR_DARK: Color = [0.1, 0.3, 0.1, 0.3];
-const PORTAL_COLOR_DARK: Color = [0.3, 0.0, 0.0, 0.5];
-const PLAYER_COLOR: Color = [0.9, 0.9, 0.9, 0.5];
+const WORLD_COLOR: Color = [0.1, 0.9, 0.1, 1.0];
+const PORTAL_COLOR: Color = [0.9, 0.0, 0.0, 1.0];
+const WORLD_COLOR_HALF_VISIBLE: Color = [0.1, 0.4, 0.1, 1.0];
+const PORTAL_COLOR_HALF_VISIBLE: Color = [0.3, 0.0, 0.0, 1.0];
+const WORLD_COLOR_NOT_VISIBLE: Color = [0.0, 0.0, 0.0, 1.0];
+const PORTAL_COLOR_NOT_VISIBLE: Color = [0.0, 0.0, 0.0, 1.0];
+const PLAYER_COLOR: Color = [0.9, 0.9, 0.9, 1.0];
 
 pub struct Game {
     // World buffers
@@ -57,35 +56,123 @@ impl Game {
         let game_map_node = map::get_tree();
         let (x, y, z) = game_map_node.travers(&self.player);
 
+        let mut x_buffer_array: [bool; WINDOW_WIDTH];
         // Draw minimap
         match y {
             None => {}
             Some(line_segments) => {
                 for line_segment in line_segments.get_lines() {
-                    let is_player_watching =
+                    // minimap view
+                    let is_player_watching_left = line_segment.normal.dot_product_with(Vec2d::new(
+                        (self.player.view_angle - PI / 4.0).sin(),
+                        (self.player.view_angle - PI / 4.0).cos(),
+                    ));
+                    let is_player_watching_right =
                         line_segment.normal.dot_product_with(Vec2d::new(
-                            self.player.view_angle.sin(),
-                            self.player.view_angle.cos(),
-                        ) /* .normalize()*/);
+                            (self.player.view_angle + PI / 4.0).sin(),
+                            (self.player.view_angle + PI / 4.0).cos(),
+                        ));
                     let wall_color = if line_segment.is_portal {
-                        if is_player_watching < 0.0 {
+                        if is_player_watching_right < 0.0 && is_player_watching_left < 0.0 {
                             PORTAL_COLOR
+                        } else if is_player_watching_right < 0.0 || is_player_watching_left < 0.0 {
+                            PORTAL_COLOR_HALF_VISIBLE
                         } else {
-                            PORTAL_COLOR_DARK
+                            PORTAL_COLOR_NOT_VISIBLE
                         }
                     } else {
-                        if is_player_watching < 0.0 {
+                        if is_player_watching_right < 0.0 && is_player_watching_left < 0.0 {
                             WORLD_COLOR
+                        } else if is_player_watching_right < 0.0 || is_player_watching_left < 0.0 {
+                            WORLD_COLOR_HALF_VISIBLE
                         } else {
-                            WORLD_COLOR_DARK
+                            WORLD_COLOR_NOT_VISIBLE
                         }
                     };
-                    draw_line(
+                    draw_line_minimap(
                         wall_color,
-                        line_segment.first.x as i32,
-                        line_segment.first.y as i32,
-                        line_segment.second.x as i32,
-                        line_segment.second.y as i32,
+                        line_segment.first.x,
+                        line_segment.first.y,
+                        line_segment.second.x,
+                        line_segment.second.y,
+                        0.0,
+                        0.0,
+                        con,
+                        g,
+                    );
+
+                    // transformed minimap view
+                    // transform vertexes relative to the player
+                    let abs_diff_1_x = line_segment.first.x - self.player.x;
+                    let abs_diff_2_x = line_segment.second.x - self.player.x;
+                    let abs_diff_1_y = line_segment.first.y - self.player.y;
+                    let abs_diff_2_y = line_segment.second.y - self.player.y;
+
+                    // rotate around the player
+                    let mut trans_diff_rot_1_x = abs_diff_1_x * self.player.view_angle.cos()
+                        + abs_diff_1_y * self.player.view_angle.sin();
+                    let mut trans_diff_rot_1_y = -abs_diff_1_x * self.player.view_angle.sin()
+                        + abs_diff_1_y * self.player.view_angle.cos();
+
+                    let mut trans_diff_rot_2_x = abs_diff_2_x * self.player.view_angle.cos()
+                        + abs_diff_2_y * self.player.view_angle.sin();
+                    let mut trans_diff_rot_2_y = -abs_diff_2_x * self.player.view_angle.sin()
+                        + abs_diff_2_y * self.player.view_angle.cos();
+
+                    // line clipping behind camera
+                    // if not portal:
+                    if trans_diff_rot_1_x <= 1.0 && trans_diff_rot_2_x <= 1.0 {
+                        // trivial reject
+                        continue;
+                    } else if trans_diff_rot_1_x <= 1.0 {
+                        // 1 x is behind player, calculate
+                        let (x1, y1) = calculate_x_y_line_for_x(
+                            trans_diff_rot_2_y,
+                            trans_diff_rot_1_y,
+                            trans_diff_rot_2_x,
+                            trans_diff_rot_1_x,
+                            2.0,
+                        );
+                        trans_diff_rot_1_x = x1;
+                        trans_diff_rot_1_y = y1;
+                    } else if trans_diff_rot_2_x <= 1.0 {
+                        // 2 x is behind player, calculate
+                        let (x2, y2) = calculate_x_y_line_for_x(
+                            trans_diff_rot_2_y,
+                            trans_diff_rot_1_y,
+                            trans_diff_rot_2_x,
+                            trans_diff_rot_1_x,
+                            2.0,
+                        );
+                        trans_diff_rot_2_x = x2;
+                        trans_diff_rot_2_y = y2;
+                    }
+
+                    let trans_diff_rot_center_1_x = trans_diff_rot_1_x + WINDOW_WIDTH as f64 / 6.0;
+                    let trans_diff_rot_center_1_y = trans_diff_rot_1_y + WINDOW_HEIGHT as f64 / 2.0;
+                    let trans_diff_rot_center_2_x = trans_diff_rot_2_x + WINDOW_WIDTH as f64 / 6.0;
+                    let trans_diff_rot_center_2_y = trans_diff_rot_2_y + WINDOW_HEIGHT as f64 / 2.0;
+
+                    draw_line_minimap(
+                        wall_color,
+                        trans_diff_rot_center_1_x,
+                        trans_diff_rot_center_1_y,
+                        trans_diff_rot_center_2_x,
+                        trans_diff_rot_center_2_y,
+                        600.0,
+                        0.0,
+                        con,
+                        g,
+                    );
+
+                    // first person view
+                    draw_wall_line_first_person(
+                        wall_color,
+                        &self.player,
+                        trans_diff_rot_center_1_x,
+                        trans_diff_rot_center_1_y,
+                        trans_diff_rot_center_2_x,
+                        trans_diff_rot_center_2_y,
                         con,
                         g,
                     );
@@ -96,19 +183,32 @@ impl Game {
         // Draw player in minimap
         draw_rectange(
             PORTAL_COLOR,
-            *&self.player.x as i32 - 10,
-            *&self.player.y as i32 - 10,
+            *&self.player.x - 10.0,
+            *&self.player.y - 10.0,
             20,
             20,
             con,
             g,
         );
-        draw_line(
+        draw_line_minimap(
             PLAYER_COLOR,
-            (*&self.player.x + (&self.player.view_angle).sin() * &self.player.move_speed) as i32,
-            (*&self.player.y + (&self.player.view_angle).cos() * &self.player.move_speed) as i32,
-            (*&self.player.x + (&self.player.view_angle - PI).sin()) as i32,
-            (*&self.player.y + (&self.player.view_angle - PI).cos()) as i32,
+            *&self.player.x + (&self.player.view_angle).sin() * &self.player.move_speed,
+            *&self.player.y + (&self.player.view_angle).cos() * &self.player.move_speed,
+            *&self.player.x + (&self.player.view_angle - PI).sin(),
+            *&self.player.y + (&self.player.view_angle - PI).cos(),
+            0.0,
+            0.0,
+            con,
+            g,
+        );
+        draw_line_minimap(
+            BLACK,
+            *&self.player.x + (&self.player.view_angle + PI / 2.0).sin() * 1000.0,
+            *&self.player.y + (&self.player.view_angle + PI / 2.0).cos() * 1000.0,
+            *&self.player.x + (&self.player.view_angle - PI / 2.0).sin() * 1000.0,
+            *&self.player.y + (&self.player.view_angle - PI / 2.0).cos() * 1000.0,
+            0.0,
+            0.0,
             con,
             g,
         );

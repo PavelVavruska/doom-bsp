@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 pub struct Player {
     pub x: f64,
     pub y: f64,
@@ -39,10 +41,35 @@ impl Player {
     pub fn turn_left(&mut self) {
         self.view_angle += 0.5;
         self.move_angle += 0.5;
+        if self.view_angle > PI {
+            self.view_angle -= 2.0 * PI;
+        }
+        if self.move_angle > PI {
+            self.move_angle -= 2.0 * PI;
+        }
+        if self.view_angle < PI {
+            self.view_angle += 2.0 * PI;
+        }
+        if self.move_angle < PI {
+            self.move_angle += 2.0 * PI;
+        }
     }
 
     pub fn turn_right(&mut self) {
         self.view_angle -= 0.5;
         self.move_angle -= 0.5;
+
+        if self.view_angle > PI {
+            self.view_angle -= 2.0 * PI;
+        }
+        if self.move_angle > PI {
+            self.move_angle -= 2.0 * PI;
+        }
+        if self.view_angle < PI {
+            self.view_angle += 2.0 * PI;
+        }
+        if self.move_angle < PI {
+            self.move_angle += 2.0 * PI;
+        }
     }
 }
