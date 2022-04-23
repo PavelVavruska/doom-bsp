@@ -7,6 +7,10 @@ pub struct Player {
     pub fov: f64,        // RAD
     pub move_angle: f64,
     pub move_speed: f64,
+    pub is_moving_forward: bool,
+    pub is_moving_backward: bool,
+    pub is_turning_left: bool,
+    pub is_turning_right: bool,
 }
 
 impl Player {
@@ -17,6 +21,10 @@ impl Player {
         fov: f64,
         move_angle: f64,
         move_speed: f64,
+        is_moving_forward: bool,
+        is_moving_backward: bool,
+        is_turning_left: bool,
+        is_turning_right: bool,
     ) -> Player {
         Player {
             x,
@@ -25,6 +33,23 @@ impl Player {
             fov,
             move_angle,
             move_speed,
+            is_moving_forward,
+            is_moving_backward,
+            is_turning_left,
+            is_turning_right,
+        }
+    }
+    pub fn tick(&mut self) {
+        if self.is_moving_forward {
+            self.move_forward();
+        } else if self.is_moving_backward {
+            self.move_backward();
+        }
+
+        if self.is_turning_left {
+            self.turn_left();
+        } else if self.is_turning_right {
+            self.turn_right();
         }
     }
 
@@ -39,8 +64,8 @@ impl Player {
     }
 
     pub fn turn_left(&mut self) {
-        self.view_angle -= 0.45;
-        self.move_angle -= 0.45;
+        self.view_angle -= 0.005;
+        self.move_angle -= 0.005;
 
         if self.view_angle > PI {
             self.view_angle -= 2.0 * PI;
@@ -57,8 +82,8 @@ impl Player {
     }
 
     pub fn turn_right(&mut self) {
-        self.view_angle += 0.45;
-        self.move_angle += 0.45;
+        self.view_angle += 0.005;
+        self.move_angle += 0.005;
         if self.view_angle > PI {
             self.view_angle -= 2.0 * PI;
         }

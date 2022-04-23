@@ -16,7 +16,7 @@ pub struct Game {
     // World buffers
     pub frame_buffer: [[bool; WINDOW_HEIGHT]; WINDOW_WIDTH],
     pub frame_buffer_next_tick: [[bool; WINDOW_HEIGHT]; WINDOW_WIDTH],
-    player: Player,
+    pub player: Player,
 }
 
 impl Game {
@@ -27,19 +27,34 @@ impl Game {
         Game {
             frame_buffer: temp_world,
             frame_buffer_next_tick: [[false; WINDOW_HEIGHT]; WINDOW_WIDTH],
-            player: Player::new(100.0, 100.0, 0.0, 10.0, 0.0, 50.0),
+            player: Player::new(
+                100.0, 100.0, 0.0, 10.0, 0.0, 0.5, false, false, false, false,
+            ),
         }
     }
     pub fn key_pressed(&mut self, key: Key) {
         match key {
-            Key::Up => self.player.move_forward(),
-            Key::W => self.player.move_forward(),
-            Key::Down => self.player.move_backward(),
-            Key::S => self.player.move_backward(),
-            Key::Left => self.player.turn_left(),
-            Key::A => self.player.turn_left(),
-            Key::Right => self.player.turn_right(),
-            Key::D => self.player.turn_right(),
+            Key::Up => self.player.is_moving_forward = true,
+            Key::W => self.player.is_moving_forward = true,
+            Key::Down => self.player.is_moving_backward = true,
+            Key::S => self.player.is_moving_backward = true,
+            Key::Left => self.player.is_turning_left = true,
+            Key::A => self.player.is_turning_left = true,
+            Key::Right => self.player.is_turning_right = true,
+            Key::D => self.player.is_turning_right = true,
+            _ => {}
+        };
+    }
+    pub fn key_released(&mut self, key: Key) {
+        match key {
+            Key::Up => self.player.is_moving_forward = false,
+            Key::W => self.player.is_moving_forward = false,
+            Key::Down => self.player.is_moving_backward = false,
+            Key::S => self.player.is_moving_backward = false,
+            Key::Left => self.player.is_turning_left = false,
+            Key::A => self.player.is_turning_left = false,
+            Key::Right => self.player.is_turning_right = false,
+            Key::D => self.player.is_turning_right = false,
             _ => {}
         };
     }
@@ -50,7 +65,6 @@ impl Game {
         let game_map_node = map::get_tree();
         let (x, y, z) = game_map_node.travers(&self.player);
 
-        let mut x_buffer_array: [bool; WINDOW_WIDTH];
         // Draw minimap
         match y {
             None => {}

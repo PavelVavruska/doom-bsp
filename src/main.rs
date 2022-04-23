@@ -41,7 +41,10 @@ fn main() {
         if let Some(Button::Keyboard(key)) = event.press_args() {
             game.key_pressed(key);
         }
-
+        if let Some(Button::Keyboard(key)) = event.release_args() {
+            game.key_released(key);
+        }
+        game.player.tick();
         // Draw all of them
         window.draw_2d(&event, |c, g, _| {
             clear(BACK_COLOR, g);
