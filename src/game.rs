@@ -17,6 +17,7 @@ const PORTAL_COLOR_HALF_VISIBLE: Color = [0.3, 0.0, 0.0, 1.0];
 const WORLD_COLOR_NOT_VISIBLE: Color = [0.0, 0.0, 0.0, 1.0];
 const PORTAL_COLOR_NOT_VISIBLE: Color = [0.0, 0.0, 0.0, 1.0];
 const PLAYER_COLOR: Color = [0.9, 0.9, 0.9, 1.0];
+const TRANSFORMED_MINIMAP_X_OFFSET: f64 = 650.0;
 
 pub struct Game {
     // World buffers
@@ -63,31 +64,10 @@ impl Game {
             Some(line_segments) => {
                 for line_segment in line_segments.get_lines() {
                     // minimap view
-                    let is_player_watching_left = line_segment.normal.dot_product_with(Vec2d::new(
-                        (self.player.view_angle - PI / 4.0).sin(),
-                        (self.player.view_angle - PI / 4.0).cos(),
-                    ));
-                    let is_player_watching_right =
-                        line_segment.normal.dot_product_with(Vec2d::new(
-                            (self.player.view_angle + PI / 4.0).sin(),
-                            (self.player.view_angle + PI / 4.0).cos(),
-                        ));
                     let wall_color = if line_segment.is_portal {
-                        if is_player_watching_right < 0.0 && is_player_watching_left < 0.0 {
-                            PORTAL_COLOR
-                        } else if is_player_watching_right < 0.0 || is_player_watching_left < 0.0 {
-                            PORTAL_COLOR_HALF_VISIBLE
-                        } else {
-                            PORTAL_COLOR_NOT_VISIBLE
-                        }
+                        PORTAL_COLOR
                     } else {
-                        if is_player_watching_right < 0.0 && is_player_watching_left < 0.0 {
-                            WORLD_COLOR
-                        } else if is_player_watching_right < 0.0 || is_player_watching_left < 0.0 {
-                            WORLD_COLOR_HALF_VISIBLE
-                        } else {
-                            WORLD_COLOR_NOT_VISIBLE
-                        }
+                        WORLD_COLOR
                     };
                     draw_line_minimap(
                         wall_color,
@@ -149,9 +129,9 @@ impl Game {
                     }
 
                     let trans_diff_rot_center_1_x = trans_diff_rot_1_x + WINDOW_WIDTH as f64 / 6.0;
-                    let trans_diff_rot_center_1_y = trans_diff_rot_1_y + WINDOW_HEIGHT as f64 / 2.0;
+                    let trans_diff_rot_center_1_y = trans_diff_rot_1_y + WINDOW_HEIGHT as f64 / 4.0;
                     let trans_diff_rot_center_2_x = trans_diff_rot_2_x + WINDOW_WIDTH as f64 / 6.0;
-                    let trans_diff_rot_center_2_y = trans_diff_rot_2_y + WINDOW_HEIGHT as f64 / 2.0;
+                    let trans_diff_rot_center_2_y = trans_diff_rot_2_y + WINDOW_HEIGHT as f64 / 4.0;
 
                     draw_line_minimap(
                         wall_color,
@@ -159,7 +139,7 @@ impl Game {
                         trans_diff_rot_center_1_y,
                         trans_diff_rot_center_2_x,
                         trans_diff_rot_center_2_y,
-                        600.0,
+                        TRANSFORMED_MINIMAP_X_OFFSET,
                         0.0,
                         con,
                         g,
@@ -169,10 +149,10 @@ impl Game {
                     draw_wall_line_first_person(
                         wall_color,
                         &self.player,
-                        trans_diff_rot_center_1_x,
-                        trans_diff_rot_center_1_y,
-                        trans_diff_rot_center_2_x,
-                        trans_diff_rot_center_2_y,
+                        trans_diff_rot_1_x,
+                        trans_diff_rot_1_y,
+                        trans_diff_rot_2_x,
+                        trans_diff_rot_2_y,
                         con,
                         g,
                     );
@@ -192,10 +172,10 @@ impl Game {
         );
         draw_line_minimap(
             PLAYER_COLOR,
-            *&self.player.x + (&self.player.view_angle).sin() * &self.player.move_speed,
-            *&self.player.y + (&self.player.view_angle).cos() * &self.player.move_speed,
-            *&self.player.x + (&self.player.view_angle - PI).sin(),
-            *&self.player.y + (&self.player.view_angle - PI).cos(),
+            *&self.player.x + (&self.player.view_angle).cos() * &self.player.move_speed * 2.0,
+            *&self.player.y + (&self.player.view_angle).sin() * &self.player.move_speed * 2.0,
+            *&self.player.x + (&self.player.view_angle).cos(),
+            *&self.player.y + (&self.player.view_angle).sin(),
             0.0,
             0.0,
             con,
@@ -203,12 +183,23 @@ impl Game {
         );
         draw_line_minimap(
             BLACK,
-            *&self.player.x + (&self.player.view_angle + PI / 2.0).sin() * 1000.0,
-            *&self.player.y + (&self.player.view_angle + PI / 2.0).cos() * 1000.0,
-            *&self.player.x + (&self.player.view_angle - PI / 2.0).sin() * 1000.0,
-            *&self.player.y + (&self.player.view_angle - PI / 2.0).cos() * 1000.0,
+            *&self.player.x + (&self.player.view_angle + PI / 2.0).cos() * 1000.0,
+            *&self.player.y + (&self.player.view_angle + PI / 2.0).sin() * 1000.0,
+            *&self.player.x + (&self.player.view_angle - PI / 2.0).cos() * 1000.0,
+            *&self.player.y + (&self.player.view_angle - PI / 2.0).sin() * 1000.0,
             0.0,
             0.0,
+            con,
+            g,
+        );
+
+        // draw player in transformed minimap
+        draw_rectange(
+            PORTAL_COLOR,
+            TRANSFORMED_MINIMAP_X_OFFSET + WINDOW_WIDTH as f64 / 6.0 - 10.0,
+            WINDOW_HEIGHT as f64 / 4.0 - 10.0,
+            20,
+            20,
             con,
             g,
         );

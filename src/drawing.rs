@@ -9,7 +9,7 @@ use piston_window::G2d;
 use crate::player::Player;
 
 const BLOCK_SIZE: f64 = 1.0;
-const MINIMAP_HEIGHT: i32 = 400;
+const MINIMAP_HEIGHT: i32 = 500;
 
 pub fn to_gui_coord(game_coord: f64) -> f64 {
     (game_coord) * BLOCK_SIZE
@@ -81,8 +81,8 @@ pub fn draw_wall_line_first_person(
 ) {
     // tan ALFA = proti od. Y / prileh od. X
     let mut angle_point_start = 0.0;
-    if player.x - start_x != 0.0 {
-        angle_point_start = ((player.y - start_y) / (player.x - start_x)).atan();
+    if -start_x != 0.0 {
+        angle_point_start = ((-start_y) / (-start_x)).atan();
         if angle_point_start > PI {
             angle_point_start -= 2.0 * PI;
         }
@@ -91,8 +91,8 @@ pub fn draw_wall_line_first_person(
         }
     }
     let mut angle_point_end = 0.0;
-    if player.x - end_x != 0.0 {
-        angle_point_end = ((player.y - end_y) / (player.x - end_x)).atan();
+    if -end_x != 0.0 {
+        angle_point_end = ((-end_y) / (-end_x)).atan();
         if angle_point_end > PI {
             angle_point_end -= 2.0 * PI;
         }
@@ -100,23 +100,21 @@ pub fn draw_wall_line_first_person(
             angle_point_end += 2.0 * PI;
         }
     }
-    let angle_diff_start = player.view_angle - angle_point_start;
-    let angle_diff_end = player.view_angle - angle_point_end;
+    let angle_diff_start = -angle_point_start;
+    let angle_diff_end = -angle_point_end;
 
     /*if angle_diff_start.abs() > PI / 2.0 && angle_diff_end.abs() > PI / 2.0 {
         return;
     }*/
 
-    let distance_from_player_start = MINIMAP_HEIGHT as f64
-        / ((player.x - start_x).powf(2.0) + (player.y - start_y).powf(2.0)).sqrt()
-        * 50.0;
-    let distance_from_player_end = MINIMAP_HEIGHT as f64
-        / ((player.x - end_x).powf(2.0) + (player.y - end_y).powf(2.0)).sqrt()
-        * 50.0;
+    let distance_from_player_start =
+        MINIMAP_HEIGHT as f64 / ((-start_x).powf(2.0) + (-start_y).powf(2.0)).sqrt() * 20.0;
+    let distance_from_player_end =
+        MINIMAP_HEIGHT as f64 / ((-end_x).powf(2.0) + (-end_y).powf(2.0)).sqrt() * 20.0;
 
-    let gui_start_x = to_gui_coord(500.0 - angle_diff_start * 100.0);
+    let gui_start_x = to_gui_coord(-1700.0 - angle_diff_start * 400.0);
     let gui_start_y = to_gui_coord(distance_from_player_start + MINIMAP_HEIGHT as f64); // lenght from player
-    let gui_end_x = to_gui_coord(500.0 - angle_diff_end * 100.0);
+    let gui_end_x = to_gui_coord(-1700.0 - angle_diff_end * 400.0);
     let gui_end_y = to_gui_coord(distance_from_player_end + MINIMAP_HEIGHT as f64);
 
     line(

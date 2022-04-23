@@ -29,18 +29,19 @@ impl Player {
     }
 
     pub fn move_forward(&mut self) {
-        self.x += self.move_angle.sin() * self.move_speed;
-        self.y += self.move_angle.cos() * self.move_speed;
+        self.x += self.move_angle.cos() * self.move_speed;
+        self.y += self.move_angle.sin() * self.move_speed;
     }
 
     pub fn move_backward(&mut self) {
-        self.x -= self.move_angle.sin() * self.move_speed;
-        self.y -= self.move_angle.cos() * self.move_speed;
+        self.x -= self.move_angle.cos() * self.move_speed;
+        self.y -= self.move_angle.sin() * self.move_speed;
     }
 
     pub fn turn_left(&mut self) {
-        self.view_angle += 0.5;
-        self.move_angle += 0.5;
+        self.view_angle -= 0.5;
+        self.move_angle -= 0.5;
+
         if self.view_angle > PI {
             self.view_angle -= 2.0 * PI;
         }
@@ -56,9 +57,8 @@ impl Player {
     }
 
     pub fn turn_right(&mut self) {
-        self.view_angle -= 0.5;
-        self.move_angle -= 0.5;
-
+        self.view_angle += 0.5;
+        self.move_angle += 0.5;
         if self.view_angle > PI {
             self.view_angle -= 2.0 * PI;
         }
