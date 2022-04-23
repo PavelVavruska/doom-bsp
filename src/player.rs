@@ -39,8 +39,8 @@ impl Player {
     }
 
     pub fn turn_left(&mut self) {
-        self.view_angle -= 0.5;
-        self.move_angle -= 0.5;
+        self.view_angle -= 0.45;
+        self.move_angle -= 0.45;
 
         if self.view_angle > PI {
             self.view_angle -= 2.0 * PI;
@@ -57,8 +57,8 @@ impl Player {
     }
 
     pub fn turn_right(&mut self) {
-        self.view_angle += 0.5;
-        self.move_angle += 0.5;
+        self.view_angle += 0.45;
+        self.move_angle += 0.45;
         if self.view_angle > PI {
             self.view_angle -= 2.0 * PI;
         }

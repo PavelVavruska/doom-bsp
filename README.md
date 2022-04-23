@@ -2,9 +2,11 @@
 
 A Doom-like BSP engine written in Rust. Features drawing a minimap.
 
+23.4.2022 first person view and transformed minimap view
+<img src="screenshots/bsp_0003.png" />
+20.4.2022 portals are drawn
 <img src="screenshots/bsp_0002.png" />
-
-feat: portals are drawn in minimap - 5c5c14e44e53e85aea3306a00cd1e0992f72a31d
+19.4.2022 map walls are drawn
 <img src="screenshots/bsp_0001.png" />
 
 ## How To Build It ?
@@ -19,11 +21,12 @@ The executable binary will appear in `target/debug`, called `rust-doom-bsp-engin
 
 ## Controls
 
-- TBD
+- arrow keys
 
 ## TODOs
 
-- draw first person point of view
+- draw first person point of view :heavy_check_mark:
+- draw segments after portals
 
 ## Bugs
 
