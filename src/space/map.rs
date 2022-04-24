@@ -111,7 +111,6 @@ pub fn get_tree() -> Node {
         &normal_vector_simple_west,
         true,
     );
-
     // segment 3 - big right
     let line_3_a = get_new_line_segment(&point_3_a, &point_3_b, &normal_vector_simple_south, false);
     let line_3_b = get_new_line_segment(&point_3_b, &point_3_c, &normal_vector_simple_west, false);
@@ -160,7 +159,6 @@ pub fn get_tree() -> Node {
     );
 
     // subsectors
-
     let subsector_1 = Subsector::new(&vec![
         line_1_a.clone(),
         line_1_b.clone(),
@@ -184,14 +182,14 @@ pub fn get_tree() -> Node {
         line_3_f.clone(),
     ]);
     let subsector_4 = Subsector::new(&vec![
-        line_4_a.clone(),
-        line_4_b_portal.clone(),
-        line_4_c.clone(),
-        line_main_portal_to_seg_3.clone(),
+        line_4_a,
+        line_4_b_portal,
+        line_4_c,
+        line_main_portal_to_seg_3,
     ]);
 
     let node_1_seg_1_seg2 = Node::new(
-        line_1_c_portal.clone(),
+        line_1_c_portal,
         None,
         None,
         Some(Box::new(subsector_1)),
@@ -199,19 +197,17 @@ pub fn get_tree() -> Node {
     );
 
     let node_2_seg_3_seg4 = Node::new(
-        line_3_e_portal.clone(),
+        line_3_e_portal,
         None,
         None,
         Some(Box::new(subsector_4)),
         Some(Box::new(subsector_3)),
     );
-    let node_3_node12 = Node::new(
-        line_main_portal_to_seg_1.clone(),
+    Node::new(
+        line_main_portal_to_seg_1,
         Some(Box::new(node_1_seg_1_seg2)),
         Some(Box::new(node_2_seg_3_seg4)),
         None,
         None,
-    );
-    //node_1_seg_1_seg2 //
-    node_3_node12
+    )
 }

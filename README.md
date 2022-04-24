@@ -1,7 +1,8 @@
 # Rust Doom BSP engine
 
 A Doom-like BSP engine written in Rust. Features drawing a minimap.
-
+24.4.2022 map traversing through portals
+<img src="screenshots/bsp_0004.png" />
 23.4.2022 first person view and transformed minimap view
 <img src="screenshots/bsp_0003.png" />
 20.4.2022 portals are drawn

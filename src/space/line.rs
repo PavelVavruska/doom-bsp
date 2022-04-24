@@ -115,14 +115,14 @@ impl Line {
             }
             true
         */
-        if self.normal.x != 0.0 {
-            if self.first.x < point.x {
-                // simplified for only vertical portals
-                return false;
-            }
-            return true;
+        //if self.normal.x != 0.0 {
+        if self.first.x < point.x {
+            // simplified for only vertical portals
+            return false;
         }
-        return false;
+        return true;
+        //}
+        //return false;
     }
 
     /// scale ends

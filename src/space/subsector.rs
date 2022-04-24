@@ -4,7 +4,7 @@ pub struct Subsector {
 }
 
 impl Subsector {
-    pub fn new(line_segments: &Vec<Line>) -> Subsector {
+    pub fn new(line_segments: &[Line]) -> Subsector {
         Subsector {
             line_segments: line_segments.to_vec(),
         }

@@ -28,8 +28,14 @@ impl Node {
         }
     }
 
-    pub fn travers(&self, player: &Player) -> (&Option<Box<Node>>, &Option<Box<Subsector>>, &Line) {
-        let is_under = self.line.is_point_under(Vec2d::new(player.x, player.y));
+    pub fn travers(
+        &self,
+        player: &Player,
+        delta: Vec2d,
+    ) -> (&Option<Box<Node>>, &Option<Box<Subsector>>, &Line) {
+        let is_under = self
+            .line
+            .is_point_under(Vec2d::new(player.x + delta.x, player.y + delta.y));
         let future_node = if is_under {
             &self.left_node
         } else {
@@ -42,7 +48,7 @@ impl Node {
             &self.right_subsector
         };
         let future = match future_node {
-            Some(node) => node.travers(player),
+            Some(node) => node.travers(player, delta),
             None => (future_node, future_subsector, &self.line),
         };
         future

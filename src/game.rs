@@ -3,6 +3,8 @@ use super::WINDOW_WIDTH;
 use crate::player::Player;
 use crate::space::line::calculate_x_y_line_for_x;
 use crate::space::map;
+use crate::space::subsector::Subsector;
+use crate::space::vec2d::Vec2d;
 use drawing::{draw_line_minimap, draw_rectange, draw_wall_line_first_person};
 use piston_window::types::Color;
 use piston_window::*;
@@ -59,17 +61,56 @@ impl Game {
         };
     }
 
-    /// Draws entire world.
-    pub fn draw(&mut self, con: &Context, g: &mut G2d) {
-        // Iterate over the world
-        let game_map_node = map::get_tree();
-        let (x, y, z) = game_map_node.travers(&self.player);
-
+    fn travers_draw(&mut self, con: &Context, g: &mut G2d, subsector: &Option<Box<Subsector>>) {
         // Draw minimap
-        match y {
+        match subsector {
             None => {}
             Some(line_segments) => {
                 for line_segment in line_segments.get_lines() {
+                    if line_segment.is_portal {
+                        let game_map_node = map::get_tree();
+                        let middle_x = (line_segment.second.x + line_segment.first.x) / 2.0;
+                        let middle_y = (line_segment.second.y + line_segment.first.y) / 2.0;
+
+                        let player_diff_x = -self.player.x + middle_x;
+                        let player_diff_y = -self.player.y + middle_y;
+                        let normal_vec = Vec2d::new(player_diff_x, player_diff_y).normalize();
+                        let delta_x = player_diff_x + normal_vec.x;
+                        let delta_y = player_diff_y + normal_vec.y;
+                        let diff_angle = Vec2d::new(delta_x, delta_y);
+
+                        // check if the portal leads forward
+                        let dot_product = Vec2d::new(line_segment.normal.x, line_segment.normal.y)
+                            .dot_product_with(Vec2d::new(
+                                self.player.view_angle.cos(),
+                                self.player.view_angle.sin(),
+                            ));
+
+                        // prevent going back through portal (infinite recursion prevention)
+                        if dot_product > 0.0 {
+                            continue;
+                        }
+
+                        /*
+                        // debug print
+                        println!(
+                            "debug portals: mx {} : my {} : pdx {} : pdy {} : nvx {} : nvy : {} delta_x: {}, delta_y: {}",
+                            middle_x,
+                            middle_y,
+                            player_diff_x,
+                            player_diff_y,
+                            normal_vec.x,
+                            normal_vec.y,
+                            delta_x,
+                            delta_y,
+                        );*/
+
+                        let (_new_node, new_subsector, _new_portal_line) =
+                            game_map_node.travers(&self.player, diff_angle); // first iteration
+
+                        self.travers_draw(con, g, new_subsector);
+                        continue;
+                    }
                     // minimap view
                     let wall_color = if line_segment.is_portal {
                         PORTAL_COLOR
@@ -167,12 +208,22 @@ impl Game {
                 }
             }
         }
+    }
+
+    /// Draws entire world.
+    pub fn draw(&mut self, con: &Context, g: &mut G2d) {
+        // Iterate over the world
+        let game_map_node = map::get_tree();
+        let (_node, subsector, _portal_line) =
+            game_map_node.travers(&self.player, Vec2d::new(0.0, 0.0)); // first iteration
+
+        self.travers_draw(con, g, subsector);
 
         // Draw player in minimap
         draw_rectange(
             PORTAL_COLOR,
-            *&self.player.x - 10.0,
-            *&self.player.y - 10.0,
+            self.player.x - 10.0,
+            self.player.y - 10.0,
             20,
             20,
             con,
@@ -180,10 +231,10 @@ impl Game {
         );
         draw_line_minimap(
             PLAYER_COLOR,
-            *&self.player.x + (&self.player.view_angle).cos() * &self.player.move_speed * 2.0,
-            *&self.player.y + (&self.player.view_angle).sin() * &self.player.move_speed * 2.0,
-            *&self.player.x + (&self.player.view_angle).cos(),
-            *&self.player.y + (&self.player.view_angle).sin(),
+            self.player.x + (&self.player.view_angle).cos() * &self.player.move_speed * 2.0,
+            self.player.y + (&self.player.view_angle).sin() * &self.player.move_speed * 2.0,
+            self.player.x + (&self.player.view_angle).cos(),
+            self.player.y + (&self.player.view_angle).sin(),
             0.0,
             0.0,
             con,
