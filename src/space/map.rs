@@ -160,26 +160,21 @@ pub fn get_tree() -> Node {
 
     // subsectors
     let subsector_1 = Subsector::new(&vec![
-        line_1_a.clone(),
-        line_1_b.clone(),
+        line_1_a,
+        line_1_b,
         line_1_c_portal.clone(),
-        line_1_d.clone(),
-        line_1_e.clone(),
-        line_1_f.clone(),
+        line_1_d,
+        line_1_e,
+        line_1_f,
     ]);
-    let subsector_2 = Subsector::new(&vec![
-        line_2_a.clone(),
-        line_2_b.clone(),
-        line_2_c_portal.clone(),
-        line_2_d.clone(),
-    ]);
+    let subsector_2 = Subsector::new(&vec![line_2_a, line_2_b, line_2_c_portal, line_2_d]);
     let subsector_3 = Subsector::new(&vec![
-        line_3_a.clone(),
-        line_3_b.clone(),
-        line_3_c.clone(),
-        line_3_d.clone(),
+        line_3_a,
+        line_3_b,
+        line_3_c,
+        line_3_d,
         line_3_e_portal.clone(),
-        line_3_f.clone(),
+        line_3_f,
     ]);
     let subsector_4 = Subsector::new(&vec![
         line_4_a,

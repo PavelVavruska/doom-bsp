@@ -231,8 +231,8 @@ impl Game {
         );
         draw_line_minimap(
             PLAYER_COLOR,
-            self.player.x + (&self.player.view_angle).cos() * &self.player.move_speed * 2.0,
-            self.player.y + (&self.player.view_angle).sin() * &self.player.move_speed * 2.0,
+            self.player.x + (&self.player.view_angle).cos() * self.player.move_speed * 2.0,
+            self.player.y + (&self.player.view_angle).sin() * self.player.move_speed * 2.0,
             self.player.x + (&self.player.view_angle).cos(),
             self.player.y + (&self.player.view_angle).sin(),
             0.0,

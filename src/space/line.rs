@@ -40,7 +40,7 @@ pub fn calculate_x_y_line_for_x(
         m = (diff_rot_2_y - diff_rot_1_y) / (diff_rot_2_x - diff_rot_1_x); // slope equation
     }
     let b = diff_rot_2_y - m * diff_rot_2_x; // compute B: y = m*x+b
-    return (x, m * x + b); // x, y for x
+    (x, m * x + b) // x, y for x
 }
 
 pub fn get_new_line_segment(
@@ -116,11 +116,9 @@ impl Line {
             true
         */
         //if self.normal.x != 0.0 {
-        if self.first.x < point.x {
-            // simplified for only vertical portals
-            return false;
-        }
-        return true;
+        self.first.x >= point.x
+        // simplified for only vertical portals
+
         //}
         //return false;
     }
